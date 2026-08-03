@@ -27,3 +27,16 @@ export async function fetchNewsById(id: string): Promise<NewsItem> {
   return res.data;
 }
 
+export interface NewsCreateInput {
+  headline: string;
+  summary?: string;
+  article?: string;
+  language?: string;
+  source?: string;
+  category?: string;
+}
+
+export async function createNews(data: NewsCreateInput): Promise<NewsItem> {
+  const res = await api.post<NewsItem>("/news", data);
+  return res.data;
+}
