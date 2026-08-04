@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     redis_url: str = ""
 
     openai_api_key: str = ""
+    # gemini_api_key: str = ""
 
     wordpress_url: str = ""
     wordpress_username: str = ""
