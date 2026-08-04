@@ -7,6 +7,8 @@ from sqlalchemy.dialects.postgresql import UUID
 
 from app.database.base import Base
 
+from sqlalchemy import ARRAY
+
 
 class News(Base):
     __tablename__ = "news"
@@ -28,3 +30,5 @@ class News(Base):
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
+
+    tags: Mapped[list[str] | None] = mapped_column(ARRAY(String), nullable=True)
