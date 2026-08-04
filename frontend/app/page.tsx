@@ -15,12 +15,17 @@ export default function Home() {
 
   return (
     <main className="p-8 max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">NewsFlow AI — Dashboard</h1>
       <div className="flex justify-between items-center mb-6">
-        <Link href="/news/new" className="bg-black text-white px-4 py-2 rounded text-sm">
-        + New News
-        </Link>
-      </div>
+  <h1 className="text-2xl font-bold">NewsFlow AI — Dashboard</h1>
+  <div className="flex gap-2">
+    <Link href="/news/generate" className="border px-4 py-2 rounded text-sm hover:bg-gray-50">
+      🔗 From URL
+    </Link>
+    <Link href="/news/new" className="bg-black text-white px-4 py-2 rounded text-sm">
+      + New News
+    </Link>
+  </div>
+</div>
       <div className="space-y-4">
         {data?.map((item) => (
           <Link key={item.id} href={`/news/${item.id}`}>
