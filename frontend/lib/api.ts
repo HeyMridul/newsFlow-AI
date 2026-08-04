@@ -40,3 +40,8 @@ export async function createNews(data: NewsCreateInput): Promise<NewsItem> {
   const res = await api.post<NewsItem>("/news", data);
   return res.data;
 }
+
+export async function generateFromUrl(url: string): Promise<NewsItem> {
+  const res = await api.post<NewsItem>("/news/generate-from-url", { url });
+  return res.data;
+}
