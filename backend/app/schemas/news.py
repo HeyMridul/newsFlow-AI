@@ -10,6 +10,7 @@ class NewsCreate(BaseModel):
     language: str = "en"
     source: str | None = None
     category: str | None = None
+    tags: list[str] | None = None
 
 
 class NewsRead(BaseModel):
@@ -23,5 +24,6 @@ class NewsRead(BaseModel):
     category: str | None
     created_at: datetime
     updated_at: datetime
+    tags: list[str] | None = None
 
     model_config = ConfigDict(from_attributes=True)
