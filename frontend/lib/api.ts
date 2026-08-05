@@ -45,3 +45,13 @@ export async function generateFromUrl(url: string): Promise<NewsItem> {
   const res = await api.post<NewsItem>("/news/generate-from-url", { url });
   return res.data;
 }
+
+export async function generateFromImage(file: File): Promise<NewsItem> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await api.post<NewsItem>("/news/generate-from-image", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return res.data;
+}
