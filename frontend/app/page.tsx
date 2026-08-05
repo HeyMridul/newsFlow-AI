@@ -21,6 +21,9 @@ export default function Home() {
     <Link href="/news/generate" className="border px-4 py-2 rounded text-sm hover:bg-gray-50">
       🔗 From URL
     </Link>
+    <Link href="/news/upload" className="border px-4 py-2 rounded text-sm hover:bg-gray-50">
+    📷 From Image
+  </Link>
     <Link href="/news/new" className="bg-black text-white px-4 py-2 rounded text-sm">
       + New News
     </Link>
