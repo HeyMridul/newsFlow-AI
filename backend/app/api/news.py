@@ -29,12 +29,7 @@ def get_news(news_id: uuid.UUID, db: Session = Depends(get_db)):
 
 class GenerateFromUrlRequest(BaseModel):
     url: str
-
-
-@router.post("/news/generate-from-url", response_model=NewsRead, status_code=201)
-def generate_from_url(payload: GenerateFromUrlRequest, db: Session = Depends(get_db)):
-    from app.services.news_service import generate_news_from_url
-    return generate_news_from_url(db, payload.url)
+    
 
 @router.post("/news/generate-from-url", response_model=NewsRead, status_code=201)
 def generate_from_url(payload: GenerateFromUrlRequest, db: Session = Depends(get_db)):
