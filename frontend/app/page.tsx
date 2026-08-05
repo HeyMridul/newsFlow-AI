@@ -18,12 +18,15 @@ export default function Home() {
       <div className="flex justify-between items-center mb-6">
   <h1 className="text-2xl font-bold">NewsFlow AI — Dashboard</h1>
   <div className="flex gap-2">
-    <Link href="/news/generate" className="border px-4 py-2 rounded text-sm hover:bg-gray-50">
+    <Link href="/news/generate" className="border border-gray-300 px-4 py-2 rounded text-sm transition-all duration-200 hover:bg-yellow-400 hover:border-yellow-400 hover:text-black">
       🔗 From URL
     </Link>
-    <Link href="/news/upload" className="border px-4 py-2 rounded text-sm hover:bg-gray-50">
+    {/* <Link href="/news/upload" className="border px-4 py-2 rounded text-sm hover:bg-gray-50">
     📷 From Image
-  </Link>
+    </Link> */}
+    <Link href="/news/upload" className="border border-gray-300 px-4 py-2 rounded text-sm transition-all duration-200 hover:bg-yellow-400 hover:border-yellow-400 hover:text-black">
+    📷 From Image
+    </Link>
     <Link href="/news/new" className="bg-black text-white px-4 py-2 rounded text-sm">
       + New News
     </Link>
@@ -35,7 +38,10 @@ export default function Home() {
             <div className="border rounded-lg p-4">
               <div className="flex justify-between items-start">
                 <h2 className="font-semibold text-lg">{item.headline}</h2>
-                <span className="text-xs px-2 py-1 bg-gray-100 rounded">
+                {/* <span className="text-xs px-2 py-1 bg-gray-100 rounded">
+                  {item.status}
+                </span> */}
+                <span className="border border-gray-300 px-4 py-2 rounded text-sm">
                   {item.status}
                 </span>
               </div>
