@@ -1,5 +1,5 @@
 import uuid
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlalchemy.orm import Session
 
 from app.database.session import get_db
@@ -45,3 +45,19 @@ def generate_from_url(payload: GenerateFromUrlRequest, db: Session = Depends(get
         raise HTTPException(status_code=422, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
+
+@router.post("/news/generate-from-image", response_model=NewsRead, status_code=201)
+async def generate_from_image(file: UploadFile = File(...), db: Session = Depends(get_db)):
+    from app.services.news_service import generate_news_from_image
+
+    if not file.content_type or not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=422, detail="Uploaded file must be an image.")
+
+    image_bytes = await file.read()
+
+    try:
+        return generate_news_from_image(db, image_bytes, file.filename or "unknown")
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")    
