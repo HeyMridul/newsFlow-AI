@@ -7,6 +7,8 @@ from app.schemas.news import NewsCreate, NewsRead
 from app.services.scraper_service import scrape_article
 from app.services.ai_service import rewrite_article
 
+from app.services.ocr_service import extract_text_from_image
+
 
 
 def create_news_item(db: Session, data: NewsCreate) -> NewsRead:
@@ -37,6 +39,24 @@ def generate_news_from_url(db: Session, url: str) -> NewsRead:
         category=ai_result["category"],
         tags=ai_result.get("tags"),
         source=url,
+        language="en",
+    )
+    news_item = create_news(db, data)
+    return NewsRead.model_validate(news_item)
+
+def generate_news_from_image(db: Session, image_bytes: bytes, filename: str) -> NewsRead:
+    extracted_text = extract_text_from_image(image_bytes)
+
+    # OCR doesn't give us a clean "title" like a webpage does — let AI infer one
+    ai_result = rewrite_article(title="(extracted from image)", content=extracted_text)
+
+    data = NewsCreate(
+        headline=ai_result["headline"],
+        summary=ai_result["summary"],
+        article=ai_result["article"],
+        category=ai_result["category"],
+        tags=ai_result.get("tags"),
+        source=f"uploaded image: {filename}",
         language="en",
     )
     news_item = create_news(db, data)
