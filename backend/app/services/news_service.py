@@ -9,6 +9,9 @@ from app.services.ai_service import rewrite_article
 
 from app.services.ocr_service import extract_text_from_image
 
+from app.services.media_service import download_image, attach_media_to_news, save_uploaded_image
+
+
 
 
 def create_news_item(db: Session, data: NewsCreate) -> NewsRead:
@@ -42,6 +45,18 @@ def generate_news_from_url(db: Session, url: str) -> NewsRead:
         language="en",
     )
     news_item = create_news(db, data)
+
+    # Download and attach images found on the source page
+    for i, image_url in enumerate(scraped.get("image_urls", [])):
+        local_path = download_image(image_url)
+        if local_path:
+            attach_media_to_news(
+                db, news_item.id, local_path,
+                original_url=image_url,
+                is_featured=(i == 0),  # first successfully-downloaded image becomes featured
+            )
+
+    db.refresh(news_item)
     return NewsRead.model_validate(news_item)
 
 def generate_news_from_image(db: Session, image_bytes: bytes, filename: str) -> NewsRead:
@@ -60,4 +75,10 @@ def generate_news_from_image(db: Session, image_bytes: bytes, filename: str) -> 
         language="en",
     )
     news_item = create_news(db, data)
+
+    # The uploaded image itself becomes the featured image for this article
+    local_path = save_uploaded_image(image_bytes, filename)
+    attach_media_to_news(db, news_item.id, local_path, is_featured=True)
+
+    db.refresh(news_item)
     return NewsRead.model_validate(news_item)
