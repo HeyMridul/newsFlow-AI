@@ -19,13 +19,16 @@ HEADERS = {
 
 
 def download_image(url: str) -> str | None:
-    """Downloads an image from a URL, saves it locally, returns the local file path."""
     try:
         response = httpx.get(url, timeout=10, follow_redirects=True, headers=HEADERS)
         response.raise_for_status()
 
         content_type = response.headers.get("content-type", "")
         if not content_type.startswith("image/"):
+            return None
+
+        # Skip tiny images — likely icons/tracking pixels, not real photos
+        if len(response.content) < 5000:  # under ~5KB
             return None
 
         ext = content_type.split("/")[-1].split(";")[0]
