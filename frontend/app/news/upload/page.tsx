@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { AxiosError } from "axios";
 import { generateFromImage } from "@/lib/api";
+import Image from "next/image";
 
 export default function UploadImage() {
   const router = useRouter();
@@ -64,7 +65,15 @@ export default function UploadImage() {
           }`}
         >
           {preview ? (
-            <img src={preview} alt="Preview" className="max-h-64 mx-auto rounded" />
+           <div className="relative w-full h-64 mx-auto">
+           <Image
+           src={preview}
+           alt="Preview"
+           fill
+           className="object-contain rounded"
+           unoptimized
+           />
+           </div>
           ) : (
             <p className="text-gray-500">Click to browse or drag an image here</p>
           )}
@@ -72,6 +81,7 @@ export default function UploadImage() {
             ref={inputRef}
             type="file"
             accept="image/*"
+            title="Upload image"
             className="hidden"
             onChange={(e) => handleFile(e.target.files?.[0] ?? null)}
           />
