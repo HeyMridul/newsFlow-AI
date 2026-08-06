@@ -7,6 +7,9 @@ from app.api.news import router as news_router
 
 from fastapi.middleware.cors import CORSMiddleware 
 
+from fastapi.staticfiles import StaticFiles
+import os
+
 
 app = FastAPI(title=settings.app_name)
 
@@ -25,3 +28,6 @@ app.include_router(news_router, prefix=settings.api_v1_prefix)
 @app.get("/")
 def root():
     return {"message": f"{settings.app_name} is running"}
+
+os.makedirs("media/uploads", exist_ok=True)
+app.mount("/media", StaticFiles(directory="media"), name="media")
