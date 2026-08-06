@@ -25,6 +25,8 @@ def scrape_article(url: str) -> dict:
     except httpx.RequestError as e:
         raise ValueError(f"Network error while fetching article: {e}") from e
 
+    full_soup = BeautifulSoup(response.text, "html.parser")
+
     doc = Document(response.text)
     title = doc.title()
     content_html = doc.summary()
@@ -35,18 +37,25 @@ def scrape_article(url: str) -> dict:
     if not text.strip():
         raise ValueError("Could not extract readable article content from this page.")
 
-    # Extract image URLs from the article body, resolving relative URLs to absolute
     base_url = httpx.URL(url)
     image_urls = []
+
+    # Priority 1: og:image meta tag — the single "representative" image most sites define
+    og_image = full_soup.find("meta", property="og:image")
+    if og_image and og_image.get("content"):
+        image_urls.append(str(base_url.join(og_image["content"])))
+
+    # Priority 2: images actually inside the extracted article body
     for img in soup.find_all("img"):
         src = img.get("src") or img.get("data-src")
         if src:
-            absolute_url = base_url.join(src)
-            image_urls.append(str(absolute_url))
+            absolute_url = str(base_url.join(src))
+            if absolute_url not in image_urls:
+                image_urls.append(absolute_url)
 
     return {
         "title": title,
         "text": text,
         "source_url": url,
-        "image_urls": image_urls[:5],  # cap at 5 to avoid downloading dozens of tracking pixels/icons
+        "image_urls": image_urls[:5],
     }
