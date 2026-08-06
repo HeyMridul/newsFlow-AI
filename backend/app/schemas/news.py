@@ -13,6 +13,15 @@ class NewsCreate(BaseModel):
     tags: list[str] | None = None
 
 
+class MediaRead(BaseModel):
+    id: uuid.UUID
+    file_path: str
+    caption: str | None
+    is_featured: bool
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class NewsRead(BaseModel):
     id: uuid.UUID
     headline: str
@@ -25,5 +34,6 @@ class NewsRead(BaseModel):
     created_at: datetime
     updated_at: datetime
     tags: list[str] | None = None
+    media: list[MediaRead] = []
 
     model_config = ConfigDict(from_attributes=True)
