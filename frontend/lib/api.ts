@@ -63,3 +63,7 @@ export interface MediaItem {
   caption: string | null;
   is_featured: boolean;
 }
+
+export function mediaUrl(filePath: string): string {
+  return `${process.env.NEXT_PUBLIC_MEDIA_URL}/${filePath}`;
+}
