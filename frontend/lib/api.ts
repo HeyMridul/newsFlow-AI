@@ -15,6 +15,7 @@ export interface NewsItem {
   category: string | null;
   created_at: string;
   updated_at: string;
+  media: MediaItem[];
 }
 
 export async function fetchNewsList(): Promise<NewsItem[]> {
@@ -54,4 +55,11 @@ export async function generateFromImage(file: File): Promise<NewsItem> {
     headers: { "Content-Type": "multipart/form-data" },
   });
   return res.data;
+}
+
+export interface MediaItem {
+  id: string;
+  file_path: string;
+  caption: string | null;
+  is_featured: boolean;
 }
