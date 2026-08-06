@@ -35,4 +35,17 @@ def scrape_article(url: str) -> dict:
     if not text.strip():
         raise ValueError("Could not extract readable article content from this page.")
 
-    return {"title": title, "text": text, "source_url": url}
+    # Extract image URLs from the article body, resolving relative URLs to absolute
+    image_urls = []
+    for img in soup.find_all("img"):
+        src = img.get("src") or img.get("data-src")
+        if src:
+            absolute_url = httpx.URL(src, base=url)
+            image_urls.append(str(absolute_url))
+
+    return {
+        "title": title,
+        "text": text,
+        "source_url": url,
+        "image_urls": image_urls[:5],  # cap at 5 to avoid downloading dozens of tracking pixels/icons
+    }
