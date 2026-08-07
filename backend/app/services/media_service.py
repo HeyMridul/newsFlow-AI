@@ -14,13 +14,20 @@ HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
         "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
-    )
+    ),
+    "Accept": "image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
 }
 
 
 def download_image(url: str) -> str | None:
     try:
-        response = httpx.get(url, timeout=10, follow_redirects=True, headers=HEADERS)
+
+        # Set Referer to the image's own domain — defeats basic anti-hotlinking checks
+        referer = f"{httpx.URL(url).scheme}://{httpx.URL(url).host}/"
+        headers = {**HEADERS, "Referer": referer}
+
+
+        response = httpx.get(url, timeout=10, follow_redirects=True, headers=headers)
         response.raise_for_status()
 
         content_type = response.headers.get("content-type", "")
