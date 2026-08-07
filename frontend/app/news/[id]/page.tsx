@@ -43,7 +43,7 @@ export default function NewsDetail() {
           {data.media.length > 1 && (
             <div className="flex gap-2 overflow-x-auto">
               {data.media.map((m) => (
-                <div key={m.id} className="relative w-24 h-24 flex-shrink-0 rounded overflow-hidden">
+                <div key={m.id} className="relative w-24 h-24 shrink-0 rounded overflow-hidden">
                   <Image src={mediaUrl(m.file_path)} alt="" fill className="object-cover" unoptimized />
                 </div>
               ))}
