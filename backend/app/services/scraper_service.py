@@ -53,6 +53,8 @@ def scrape_article(url: str) -> dict:
             if absolute_url not in image_urls:
                 image_urls.append(absolute_url)
 
+    print(f"[DEBUG] Found {len(image_urls)} image URLs: {image_urls}")
+    
     return {
         "title": title,
         "text": text,
