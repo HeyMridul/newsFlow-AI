@@ -25,10 +25,11 @@ def download_image(url: str) -> str | None:
 
         content_type = response.headers.get("content-type", "")
         if not content_type.startswith("image/"):
+            print(f"[DEBUG] Skipped (not an image): {url} — content-type: {content_type}")
             return None
 
-        # Skip tiny images — likely icons/tracking pixels, not real photos
-        if len(response.content) < 5000:  # under ~5KB
+        if len(response.content) < 5000:
+            print(f"[DEBUG] Skipped (too small, {len(response.content)} bytes): {url}")
             return None
 
         ext = content_type.split("/")[-1].split(";")[0]
@@ -40,7 +41,8 @@ def download_image(url: str) -> str | None:
         filepath.write_bytes(response.content)
 
         return f"media/uploads/{filename}"
-    except Exception:
+    except Exception as e:
+        print(f"[DEBUG] Failed to download {url}: {e}")
         return None
 
 
