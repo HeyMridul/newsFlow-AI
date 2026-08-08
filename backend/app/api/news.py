@@ -29,7 +29,7 @@ def get_news(news_id: uuid.UUID, db: Session = Depends(get_db)):
 
 class GenerateFromUrlRequest(BaseModel):
     url: str
-    
+
 
 @router.post("/news/generate-from-url", response_model=NewsRead, status_code=201)
 def generate_from_url(payload: GenerateFromUrlRequest, db: Session = Depends(get_db)):
@@ -55,4 +55,15 @@ async def generate_from_image(file: UploadFile = File(...), db: Session = Depend
     except ValueError as e:
         raise HTTPException(status_code=422, detail=str(e))
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")    
+        raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")   
+
+
+@router.post("/news/{news_id}/publish-to-wordpress", response_model=NewsRead)
+def publish_to_wordpress(news_id: uuid.UUID, db: Session = Depends(get_db)):
+    from app.services.news_service import publish_news_to_wordpress
+    try:
+        return publish_news_to_wordpress(db, news_id)
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")     
