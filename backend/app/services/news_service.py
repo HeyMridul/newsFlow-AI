@@ -13,6 +13,8 @@ from app.services.ocr_service import extract_text_from_image
 from app.services.media_service import download_image, attach_media_to_news, save_uploaded_image
 from app.services.wordpress_service import upload_media, create_post
 
+from app.services.image_extraction_service import extract_photo_regions
+
 
 
 
@@ -61,10 +63,32 @@ def generate_news_from_url(db: Session, url: str) -> NewsRead:
     db.refresh(news_item)
     return NewsRead.model_validate(news_item)
 
+# def generate_news_from_image(db: Session, image_bytes: bytes, filename: str) -> NewsRead:
+#     extracted_text = extract_text_from_image(image_bytes)
+
+#     # OCR doesn't give us a clean "title" like a webpage does — let AI infer one
+#     ai_result = rewrite_article(title="(extracted from image)", content=extracted_text)
+
+#     data = NewsCreate(
+#         headline=ai_result["headline"],
+#         summary=ai_result["summary"],
+#         article=ai_result["article"],
+#         category=ai_result["category"],
+#         tags=ai_result.get("tags"),
+#         source=f"uploaded image: {filename}",
+#         language="en",
+#     )
+#     news_item = create_news(db, data)
+
+#     # The uploaded image itself becomes the featured image for this article
+#     local_path = save_uploaded_image(image_bytes, filename)
+#     attach_media_to_news(db, news_item.id, local_path, is_featured=True)
+
+#     db.refresh(news_item)
+#     return NewsRead.model_validate(news_item)
+
 def generate_news_from_image(db: Session, image_bytes: bytes, filename: str) -> NewsRead:
     extracted_text = extract_text_from_image(image_bytes)
-
-    # OCR doesn't give us a clean "title" like a webpage does — let AI infer one
     ai_result = rewrite_article(title="(extracted from image)", content=extracted_text)
 
     data = NewsCreate(
@@ -78,9 +102,18 @@ def generate_news_from_image(db: Session, image_bytes: bytes, filename: str) -> 
     )
     news_item = create_news(db, data)
 
-    # The uploaded image itself becomes the featured image for this article
+    # Save the full uploaded image as the primary/featured reference
     local_path = save_uploaded_image(image_bytes, filename)
     attach_media_to_news(db, news_item.id, local_path, is_featured=True)
+
+    # Attempt to detect and save distinct photo regions found within the image
+    try:
+        photo_regions = extract_photo_regions(image_bytes)
+        for i, region_bytes in enumerate(photo_regions):
+            region_path = save_uploaded_image(region_bytes, f"region_{i}.jpg")
+            attach_media_to_news(db, news_item.id, region_path, is_featured=False)
+    except Exception:
+        pass  # region extraction is best-effort; never block the main flow on it
 
     db.refresh(news_item)
     return NewsRead.model_validate(news_item)
